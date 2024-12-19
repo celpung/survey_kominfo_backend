@@ -2,7 +2,6 @@ package environment
 
 import (
 	"log"
-	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -12,7 +11,6 @@ type Environment struct {
 	Port                 string
 	EmailConfirmationURL string
 	AppName              string
-	AllowedOrigins       []string
 }
 
 var Env Environment
@@ -29,6 +27,5 @@ func init() {
 		Port:                 "8080",
 		EmailConfirmationURL: "http://localhost:8080",
 		AppName:              "Gocleanarch",
-		AllowedOrigins:       strings.Split("http://localhost,http://localhost:5173", ","),
 	}
 }

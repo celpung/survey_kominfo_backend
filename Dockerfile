@@ -15,13 +15,13 @@ COPY . .
 WORKDIR /app/cmd/gin
 
 # Build the Go application and output it as a binary named
-RUN go build -o /app/gocleanarch
+RUN go build -o /app/survey-kominfo-backend
 
 # Ensure the binary has executable permissions
-RUN chmod +x /app/gocleanarch
+RUN chmod +x /app/survey-kominfo-backend
 
 # Expose the port that the Go app will use
 EXPOSE 8080
 
 # Set the default command to run the Go application
-CMD ["/app/gocleanarch"]
+CMD ["/app/survey-kominfo-backend"]

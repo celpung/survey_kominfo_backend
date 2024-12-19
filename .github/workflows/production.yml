@@ -1,27 +1,32 @@
 name: CI/CD Go App
 on:
   push:
-    branches: ["production"]
+    branches:
+      - "main"
 
 jobs:
   build:
-    environment: production
+    environment: main
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+      IMAGE_NAME: ${{ secrets.DOCKER_HUB_USERNAME }}/survey-kominfo-backend:latest
     steps:
+      # Checkout the code from the repository
       - name: Checkout
         uses: actions/checkout@v3
 
+      # Login to Docker Hub
       - name: Connect to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
+      # Setup Docker Buildx
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      # Build the Docker image and push to Docker Hub
       - name: Build and Push Docker image
         uses: docker/build-push-action@v4
         with:
@@ -34,9 +39,26 @@ jobs:
     environment: production
     runs-on: ubuntu-latest
     env:
-      CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
-      IMAGE_NAME: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+      CONTAINER_NAME: survey-kominfo-backend
+      IMAGE_NAME: ${{ secrets.DOCKER_HUB_USERNAME }}/survey-kominfo-backend:latest
     steps:
+      # Backup /app/cmd/gin/public data from the existing container
+      - name: Backup Data from Running Container
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          script: |
+            # Check if the folder exists before copying it
+            if docker exec ${{ env.CONTAINER_NAME }} test -d /app/cmd/gin/public; then
+              docker cp ${{ env.CONTAINER_NAME }}:/app/cmd/gin/public /tmp/
+            else
+              echo "Folder /app/cmd/gin/public does not exist. Skipping backup."
+            fi
+
+      # Deploy the image to the VPS
       - name: Deploy to VPS
         uses: appleboy/ssh-action@master
         with:
@@ -45,9 +67,13 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_SSH_PORT }}
           script: |
-            whoami
+            # Stop and remove the existing container
             docker stop ${{ env.CONTAINER_NAME }} || true && docker rm ${{ env.CONTAINER_NAME }} || true
+            
+            # Pull the latest image from Docker Hub
             docker pull ${{ env.IMAGE_NAME }}
+            
+            # Run the Docker container on the VPS
             docker run -d --name ${{ env.CONTAINER_NAME }} -p 8080:8080 \
               -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
               -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
@@ -56,8 +82,25 @@ jobs:
               -e DB_HOST=${{ secrets.DB_HOST }} \
               -e DB_DIALECT=${{ secrets.DB_DIALECT }} \
               -e JWT_TOKEN=${{ secrets.JWT_TOKEN }} \
+              -e MODE=release \
+              -e SMTP_HOST=${{ secrets.SMTP_HOST }} \
+              -e SMTP_PORT=${{ secrets.SMTP_PORT }} \
+              -e SMTP_USER=${{ secrets.SMTP_USER }} \
+              -e SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }} \
+              -e SMTP_EMAIL_SENDER=${{ secrets.SMTP_EMAIL_SENDER }} \
+              -e APP_NAME=${{ env.APP_NAME }} \
               ${{ env.IMAGE_NAME }}
 
+            # Restore the backed-up data only if it exists
+            if [ -d /tmp/public ]; then
+              docker cp /tmp/public ${{ env.CONTAINER_NAME }}:/app/cmd/gin/
+              echo "Restoration successful."
+              rm -rf /tmp/public
+            else
+              echo "No data to restore. Skipping."
+            fi
+
+      # Clean up unused Docker images
       - name: Clean up unused Docker images
         uses: appleboy/ssh-action@master
         with:
@@ -67,4 +110,3 @@ jobs:
           port: ${{ secrets.VPS_SSH_PORT }}
           script: |
             docker image prune -a -f
-        
