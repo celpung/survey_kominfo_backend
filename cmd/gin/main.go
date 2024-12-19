@@ -61,18 +61,6 @@ func main() {
 	api := r.Group("/api")
 	user_router.Router(api)
 
-	crud_router.SetupRouter[entity.Slider](
-		api,
-		mysql_configs.DB,
-		reflect.TypeOf(entity.Slider{}),
-		"/sliders",
-		map[string][]gin.HandlerFunc{
-			"POST":   {},
-			"READ":   {},
-			"PUT":    {},
-			"DELETE": {},
-		})
-
 	crud_router.SetupRouter[entity.Survey](
 		api,
 		mysql_configs.DB,
@@ -111,10 +99,10 @@ func main() {
 
 	// Serve static files
 	r.GET("/", func(c *gin.Context) {
-		c.File("../../public/index.html")
+		c.File("./public")
 	})
 
-	r.Static("/images", "../../public/images")
+	r.Static("/images", "./public/images")
 
 	// Start the server
 	r.Run(fmt.Sprintf(":%s", environment.Env.PORT))

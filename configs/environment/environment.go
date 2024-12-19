@@ -10,6 +10,8 @@ import (
 type Environment struct {
 	BASE_URL string
 	PORT     string
+	MODE     string
+	APP_NAME string
 }
 
 var Env Environment
@@ -24,6 +26,8 @@ func init() {
 	Env = Environment{
 		BASE_URL: getEnv("BASE_URL", "http://localhost:8080"),
 		PORT:     getEnv("PORT", "8080"),
+		MODE:     getEnv("MODE", "release"),
+		APP_NAME: getEnv("APP_NAME", "Survey Kominfo"),
 	}
 }
 
