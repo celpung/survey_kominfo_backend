@@ -117,5 +117,5 @@ func main() {
 	r.Static("/images", "../../public/images")
 
 	// Start the server
-	r.Run(fmt.Sprintf(":%s", environment.Env.Port))
+	r.Run(fmt.Sprintf(":%s", environment.Env.PORT))
 }
