@@ -1,7 +1,8 @@
 package role
 
 const (
-	Super = 3
+	Super = 4
+	Utama = 3
 	Admin = 2
 	User  = 1
 )
