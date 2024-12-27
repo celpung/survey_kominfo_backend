@@ -9,6 +9,8 @@ import (
 
 	mysql_configs "github.com/celpung/gocleanarch/configs/database/mysql"
 	"github.com/celpung/gocleanarch/configs/environment"
+	middlewares "github.com/celpung/gocleanarch/configs/middlewares/gin"
+	"github.com/celpung/gocleanarch/configs/role"
 	user_router "github.com/celpung/gocleanarch/domain/user/delivery/gin/router"
 	"github.com/celpung/gocleanarch/entity"
 	crud_router "github.com/celpung/gocleanarch/utils/crud/delivery/router"
@@ -69,7 +71,7 @@ func main() {
 		reflect.TypeOf(entity.Survey{}),
 		"/surveys",
 		map[string][]gin.HandlerFunc{
-			"POST":   {},
+			"POST":   {middlewares.UserMiddleware(role.User)},
 			"READ":   {},
 			"PUT":    {},
 			"DELETE": {},
