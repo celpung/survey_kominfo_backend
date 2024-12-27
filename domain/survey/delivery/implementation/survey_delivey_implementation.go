@@ -2,6 +2,7 @@ package survey_delivery_implementation
 
 import (
 	"net/http"
+	"strconv"
 
 	survey_delivery "github.com/celpung/gocleanarch/domain/survey/delivery"
 	survey_usecase "github.com/celpung/gocleanarch/domain/survey/usecase"
@@ -33,7 +34,7 @@ func (d *SurveyDeliveryStruct) Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusCreated, gin.H{
 		"success": true,
 		"data":    survey,
 	})
@@ -41,7 +42,61 @@ func (d *SurveyDeliveryStruct) Create(c *gin.Context) {
 
 // Read implements survey_delivery.SurveyDeliveryInterface.
 func (d *SurveyDeliveryStruct) Read(c *gin.Context) {
-	panic("unimplemented")
+	pageStr := c.DefaultQuery("page", "1")
+	limitStr := c.DefaultQuery("limit", "10")
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid page parameter",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid limit parameter",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	surveys, total, err := d.usecase.Read(page, limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to fetch surveys data!",
+			"error":   err.Error(),
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":    true,
+		"message":    "Success fetch surveys data!",
+		"surveys":    surveys,
+		"total_data": total,
+	})
+
+	// surveys, total, err := d.usecase.Read(page, limit)
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{
+	// 		"success": false,
+	// 		"message": "Failed to bind login data!",
+	// 		"error":   err.Error(),
+	// 	})
+	// 	return
+	// }
+
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"success":    true,
+	// 	"message":    "Success fetch surveys data!",
+	// 	"user":       surveys,
+	// 	"total_data": total,
+	// })
 }
 
 func (d *SurveyDeliveryStruct) ReadByID(c *gin.Context) {

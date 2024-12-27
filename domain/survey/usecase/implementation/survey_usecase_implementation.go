@@ -16,8 +16,8 @@ func (u *SurveyUsecaseStruct) Create(survey *entity.Survey) (*entity.Survey, err
 }
 
 // Read implements survey_usecase.SurveyUsecaseInterface.
-func (u *SurveyUsecaseStruct) Read() ([]*entity.Survey, error) {
-	return u.repository.Read()
+func (u *SurveyUsecaseStruct) Read(page, limit int) ([]*entity.Survey, int64, error) {
+	return u.repository.Read(page, limit)
 }
 
 func (u *SurveyUsecaseStruct) ReadByID(id uint) (*entity.Survey, error) {

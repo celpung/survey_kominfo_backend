@@ -25,6 +25,7 @@ func Router(r *gin.RouterGroup) {
 		routes.POST("/register", delivery.Register)
 		routes.POST("/login", delivery.Login)
 		routes.GET("", middlewares.UserMiddleware(role.Admin), delivery.GetAllUserData)
+		routes.GET("/:id", middlewares.UserMiddleware(role.User), delivery.GetUserById)
 		routes.PATCH("", middlewares.UserMiddleware(role.User), delivery.UpdateUser)
 	}
 }

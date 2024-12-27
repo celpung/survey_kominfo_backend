@@ -21,14 +21,21 @@ func (r *SurveyRepositoryStruct) Create(survey *entity.Survey) (*entity.Survey, 
 }
 
 // Read implements survey_repository.SurveyRepositoryInterface.
-func (r *SurveyRepositoryStruct) Read() ([]*entity.Survey, error) {
+func (r *SurveyRepositoryStruct) Read(page, limit int) ([]*entity.Survey, int64, error) {
 	// get all data from database
+	offset := (page - 1) * limit
+	var totalCount int64
 	var surveys []*entity.Survey
-	if err := r.DB.Preload("Questions").Find(&surveys).Error; err != nil {
-		return nil, err
+
+	if err := r.DB.Model(&entity.Survey{}).Count(&totalCount).Error; err != nil {
+		return nil, 0, err
 	}
 
-	return surveys, nil
+	if err := r.DB.Limit(limit).Offset(offset).Preload("Questions").Find(&surveys).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return surveys, totalCount, nil
 }
 
 // ReadByID implements survey_repository.SurveyRepositoryInterface.

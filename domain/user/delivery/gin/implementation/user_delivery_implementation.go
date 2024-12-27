@@ -38,7 +38,7 @@ func (d *UserDeliveryStruct) Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusCreated, gin.H{
 		"success": true,
 		"message": "Register success!",
 		"user":    user,
@@ -122,6 +122,37 @@ func (d *UserDeliveryStruct) GetAllUserData(c *gin.Context) {
 		"message":    "Success fetch user data!",
 		"user":       user,
 		"total_data": total,
+	})
+}
+
+func (d *UserDeliveryStruct) GetUserById(c *gin.Context) {
+	// get user id from parameter
+	idStr := c.Param("id")
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid user id!",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	user, err := d.UserUsecase.ReadByID(uint(id))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Failed to get user data!",
+			"error":   err.Error(),
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Success get user data!",
+		"user":    user,
 	})
 }
 
