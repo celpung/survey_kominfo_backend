@@ -3,30 +3,31 @@ package entity
 import "time"
 
 type Survey struct {
-	ID               uint             `gorm:"primaryKey" json:"id" form:"id"`
-	UserID           uint             `json:"user_id" form:"user_id"`
-	Author           User             `gorm:"foreignKey:UserID" json:"author"`
-	Image            string           `json:"image" form:"image"`
-	Title            string           `gorm:"unique" json:"title" form:"title"`
-	Slug             string           `gorm:"unique" json:"slug" form:"slug"`
-	Status           bool             `json:"status" form:"status"`
-	Description      string           `json:"description" form:"description"`
-	ExpireDate       time.Time        `json:"expire_date" form:"expire_date"`
-	Questions        []SurveyQuestion `gorm:"foreignKey:SurveyID" json:"questions"`
-	SurveyCategoryID uint             `json:"survey_id"`
-	Public           bool             `json:"public"`
-	CreatedAt        time.Time        `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt        time.Time        `gorm:"autoUpdateTime" json:"updated_at"`
-	DeletedAt        *time.Time       `gorm:"index" json:"deleted_at"`
+	ID          uint             `gorm:"primaryKey" json:"id" form:"id"`
+	UserID      uint             `json:"user_id" form:"user_id"`
+	Author      User             `gorm:"foreignKey:UserID" json:"author"`
+	Image       string           `json:"image" form:"image"`
+	Title       string           `gorm:"unique" json:"title" form:"title"`
+	Slug        string           `gorm:"unique" json:"slug" form:"slug"`
+	Status      bool             `json:"status" form:"status"`
+	Description string           `json:"description" form:"description"`
+	ExpireDate  time.Time        `json:"expire_date" form:"expire_date"`
+	Questions   []SurveyQuestion `gorm:"foreignKey:SurveyID" json:"questions"`
+	// CategoryID       uint             `json:"category_id" form:"category_id"`
+	// SurveyCategoryID uint             `gorm:"foreignKey:CategoryID" json:"category"`
+	Public    bool       `json:"public"`
+	CreatedAt time.Time  `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt time.Time  `gorm:"autoUpdateTime" json:"updated_at"`
+	DeletedAt *time.Time `gorm:"index" json:"deleted_at"`
 }
 
 // generate qr code untuk survey
 // buat table role
 
 type SurveyCategory struct {
-	ID        uint       `gorm:"primaryKey" json:"id" form:"id"`
-	Name      string     `gorm:"unique" json:"name" form:"name" binding:"required"`
-	Surveys   []Survey   `gorm:"foreignKey:CategoryID" json:"surveys"`
+	ID   uint   `gorm:"primaryKey" json:"id" form:"id"`
+	Name string `gorm:"unique" json:"name" form:"name" binding:"required"`
+	// Surveys   []Survey   `gorm:"foreignKey:CategoryID" json:"surveys"`
 	CreatedAt time.Time  `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time  `gorm:"autoUpdateTime" json:"updated_at"`
 	DeletedAt *time.Time `gorm:"index" json:"deleted_at"`
