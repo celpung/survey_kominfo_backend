@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/celpung/gocleanarch/configs/role"
 	"github.com/gin-gonic/gin"
@@ -65,6 +66,20 @@ func UserMiddleware(requiredRole role.Role) gin.HandlerFunc {
 			return
 		}
 
+		// Check expiration time
+		if claims, ok := token.Claims.(jwt.MapClaims); ok {
+			if exp, ok := claims["exp"].(float64); ok {
+				if time.Unix(int64(exp), 0).Before(time.Now()) {
+					ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+						"success": false,
+						"message": "Token has expired",
+						"error":   "Unauthorized",
+					})
+					return
+				}
+			}
+		}
+
 		userRole := role.Role(userRoleClaim)
 		if userRole < requiredRole {
 			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{
@@ -77,7 +92,7 @@ func UserMiddleware(requiredRole role.Role) gin.HandlerFunc {
 
 		// Set the authenticated user in the context
 		ctx.Set("userID", token.Claims.(jwt.MapClaims)["id"])
-		ctx.Set("email", token.Claims.(jwt.MapClaims)["email"])
+		ctx.Set("username", token.Claims.(jwt.MapClaims)["username"])
 		ctx.Set("role", token.Claims.(jwt.MapClaims)["role"])
 
 		// Call the next middleware/handler function in the chain

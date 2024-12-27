@@ -6,6 +6,7 @@ type SurveyDeliveryInterface interface {
 	Create(c *gin.Context)
 	Read(c *gin.Context)
 	ReadByID(c *gin.Context)
+	ReadBySlug(c *gin.Context)
 	Update(c *gin.Context)
 	Delete(c *gin.Context)
 }

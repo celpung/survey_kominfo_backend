@@ -31,7 +31,13 @@ func (r *SurveyRepositoryStruct) Read(page, limit int) ([]*entity.Survey, int64,
 		return nil, 0, err
 	}
 
-	if err := r.DB.Limit(limit).Offset(offset).Preload("Questions").Find(&surveys).Error; err != nil {
+	// Select specific fields for the User model, excluding the Password field
+	if err := r.DB.Limit(limit).Offset(offset).
+		Preload("Questions").
+		Preload("Author", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, name, username, active, role, created_at, updated_at, deleted_at")
+		}).
+		Find(&surveys).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -42,7 +48,21 @@ func (r *SurveyRepositoryStruct) Read(page, limit int) ([]*entity.Survey, int64,
 func (r *SurveyRepositoryStruct) ReadByID(id uint) (*entity.Survey, error) {
 	// read survey by id
 	var survey entity.Survey
-	if err := r.DB.Preload("Questions").First(&survey, id).Error; err != nil {
+	if err := r.DB.Preload("Questions").Preload("Author", func(db *gorm.DB) *gorm.DB {
+		return db.Select("id, name, username, active, role, created_at, updated_at, deleted_at")
+	}).First(&survey, id).Error; err != nil {
+		return nil, err
+	}
+
+	return &survey, nil
+}
+
+func (r *SurveyRepositoryStruct) ReadBySlug(slug string) (*entity.Survey, error) {
+	// read survey by slug
+	var survey entity.Survey
+	if err := r.DB.Preload("Questions").Preload("Author", func(db *gorm.DB) *gorm.DB {
+		return db.Select("id, name, username, active, role, created_at, updated_at, deleted_at")
+	}).Where("slug = ?", slug).First(&survey).Error; err != nil {
 		return nil, err
 	}
 

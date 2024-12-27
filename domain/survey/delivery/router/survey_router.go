@@ -20,6 +20,7 @@ func Router(r *gin.RouterGroup) {
 		routes.POST("", middlewares.UserMiddleware(role.User), delivery.Create)
 		routes.GET("", middlewares.UserMiddleware(role.User), delivery.Read)
 		routes.GET("/:id", middlewares.UserMiddleware(role.User), delivery.ReadByID)
+		routes.GET("/slug/:slug", middlewares.UserMiddleware(role.User), delivery.ReadBySlug)
 		routes.PUT("", middlewares.UserMiddleware(role.User), delivery.Update)
 		routes.DELETE("/:id", middlewares.UserMiddleware(role.User), delivery.Delete)
 	}

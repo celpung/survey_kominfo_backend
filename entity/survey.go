@@ -4,9 +4,12 @@ import "time"
 
 type Survey struct {
 	ID          uint             `gorm:"primaryKey" json:"id" form:"id"`
+	UserID      uint             `json:"user_id" form:"user_id"`
+	Author      *User            `gorm:"foreignKey:UserID" json:"author,omitempty"`
 	Image       string           `json:"image" form:"image"`
-	Title       string           `gorm:"unique" json:"title" form:"title"`
-	Slug        string           `gorm:"unique" json:"slug" form:"slug"`
+	Title       string           `gorm:"not null" json:"title" form:"title"`
+	Slug        string           `gorm:"unique;not null" json:"slug" form:"slug"`
+	Key         string           `gorm:"unique;not null" json:"key" form:"key"`
 	Status      bool             `json:"status" form:"status"`
 	Description string           `json:"description" form:"description"`
 	ExpireDate  time.Time        `json:"expire_date" form:"expire_date"`
@@ -16,8 +19,6 @@ type Survey struct {
 	UpdatedAt   time.Time        `gorm:"autoUpdateTime" json:"updated_at"`
 	DeletedAt   *time.Time       `gorm:"index" json:"deleted_at"`
 }
-
-// Key         string           `json:"key", binding"required"`
 
 // CategoryID       uint             `json:"category_id" form:"category_id"`
 // SurveyCategoryID uint             `gorm:"foreignKey:CategoryID" json:"category"`
