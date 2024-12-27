@@ -12,6 +12,7 @@ import (
 	survey_category_router "github.com/celpung/gocleanarch/domain/category/delivery/router"
 	survey_question_router "github.com/celpung/gocleanarch/domain/question/delivery/route"
 	survey_router "github.com/celpung/gocleanarch/domain/survey/delivery/router"
+	uploader_router "github.com/celpung/gocleanarch/domain/uploader/route"
 	user_router "github.com/celpung/gocleanarch/domain/user/delivery/gin/router"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -69,61 +70,15 @@ func main() {
 	survey_category_router.Router(api)
 	survey_question_router.Router(api)
 	survey_answer_router.Router(api)
-
-	// crud_router.SetupRouter[entity.SurveyCategory](
-	// 	api,
-	// 	mysql_configs.DB,
-	// 	reflect.TypeOf(entity.SurveyCategory{}),
-	// 	"/categories",
-	// 	map[string][]gin.HandlerFunc{
-	// 		"POST":   {},
-	// 		"READ":   {},
-	// 		"PUT":    {},
-	// 		"DELETE": {},
-	// 	})
-
-	// crud_router.SetupRouter[entity.Survey](
-	// 	api,
-	// 	mysql_configs.DB,
-	// 	reflect.TypeOf(entity.Survey{}),
-	// 	"/surveys",
-	// 	map[string][]gin.HandlerFunc{
-	// 		"POST":   {},
-	// 		"READ":   {},
-	// 		"PUT":    {},
-	// 		"DELETE": {},
-	// 	})
-
-	// crud_router.SetupRouter[entity.SurveyQuestion](
-	// 	api,
-	// 	mysql_configs.DB,
-	// 	reflect.TypeOf(entity.SurveyQuestion{}),
-	// 	"/survey-questions",
-	// 	map[string][]gin.HandlerFunc{
-	// 		"POST":   {},
-	// 		"READ":   {},
-	// 		"PUT":    {},
-	// 		"DELETE": {},
-	// 	})
-
-	// crud_router.SetupRouter[entity.SurveyAnswer](
-	// 	api,
-	// 	mysql_configs.DB,
-	// 	reflect.TypeOf(entity.SurveyAnswer{}),
-	// 	"/survey-answers",
-	// 	map[string][]gin.HandlerFunc{
-	// 		"POST":   {},
-	// 		"READ":   {},
-	// 		"PUT":    {},
-	// 		"DELETE": {},
-	// 	})
+	uploader_router.Router(api)
 
 	// Serve static files
 	r.GET("/", func(c *gin.Context) {
 		c.File("./public")
 	})
 
-	r.Static("/images", "./public/images") // this is should be private
+	r.Static("/images", "./public/images") 
+	r.Static("/files", "./public/files")
 
 	// Start the server
 	r.Run(fmt.Sprintf(":%s", environment.Env.PORT))

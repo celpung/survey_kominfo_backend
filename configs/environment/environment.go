@@ -24,7 +24,7 @@ func init() {
 
 	// Initialize environment variables with fallback to hardcoded defaults
 	Env = Environment{
-		BASE_URL: getEnv("BASE_URL", "http://localhost:8080"),
+		BASE_URL: getEnv("BASE_URL", "http://103.116.168.244/survey"),
 		PORT:     getEnv("PORT", "8080"),
 		MODE:     getEnv("MODE", "release"),
 		APP_NAME: getEnv("APP_NAME", "Survey Kominfo"),
