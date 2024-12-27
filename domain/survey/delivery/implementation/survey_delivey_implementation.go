@@ -14,37 +14,6 @@ type SurveyDeliveryStruct struct {
 	usecase survey_usecase.SurveyUsecaseInterface
 }
 
-// Create implements survey_delivery.SurveyDeliveryInterface.
-// func (d *SurveyDeliveryStruct) Create(c *gin.Context) {
-// 	userIDFloat := c.MustGet("userID").(float64)
-// 	userID := int(userIDFloat)
-
-// 	var reg entity.Survey
-
-// 	reg.UserID = uint(userID)
-
-// 	if err := c.ShouldBindJSON(&reg); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{
-// 			"success": false,
-// 			"error":   err.Error(),
-// 		})
-// 		return
-// 	}
-
-// 	survey, err := d.usecase.Create(&reg)
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{
-// 			"success": false,
-// 			"error":   err.Error(),
-// 		})
-// 		return
-// 	}
-
-//		c.JSON(http.StatusCreated, gin.H{
-//			"success": true,
-//			"data":    survey,
-//		})
-//	}
 func (d *SurveyDeliveryStruct) Create(c *gin.Context) {
 	userIDFloat := c.MustGet("userID").(float64)
 	userID := int(userIDFloat)

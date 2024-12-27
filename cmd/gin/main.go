@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"reflect"
 	"time"
 
 	mysql_configs "github.com/celpung/gocleanarch/configs/database/mysql"
 	"github.com/celpung/gocleanarch/configs/environment"
+	survey_answer_router "github.com/celpung/gocleanarch/domain/answer/delivery/route"
+	survey_category_router "github.com/celpung/gocleanarch/domain/category/delivery/router"
+	survey_question_router "github.com/celpung/gocleanarch/domain/question/delivery/route"
 	survey_router "github.com/celpung/gocleanarch/domain/survey/delivery/router"
 	user_router "github.com/celpung/gocleanarch/domain/user/delivery/gin/router"
-	"github.com/celpung/gocleanarch/entity"
-	crud_router "github.com/celpung/gocleanarch/utils/crud/delivery/router"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -66,18 +66,21 @@ func main() {
 
 	user_router.Router(api)
 	survey_router.Router(api)
+	survey_category_router.Router(api)
+	survey_question_router.Router(api)
+	survey_answer_router.Router(api)
 
-	crud_router.SetupRouter[entity.SurveyCategory](
-		api,
-		mysql_configs.DB,
-		reflect.TypeOf(entity.SurveyCategory{}),
-		"/categories",
-		map[string][]gin.HandlerFunc{
-			"POST":   {},
-			"READ":   {},
-			"PUT":    {},
-			"DELETE": {},
-		})
+	// crud_router.SetupRouter[entity.SurveyCategory](
+	// 	api,
+	// 	mysql_configs.DB,
+	// 	reflect.TypeOf(entity.SurveyCategory{}),
+	// 	"/categories",
+	// 	map[string][]gin.HandlerFunc{
+	// 		"POST":   {},
+	// 		"READ":   {},
+	// 		"PUT":    {},
+	// 		"DELETE": {},
+	// 	})
 
 	// crud_router.SetupRouter[entity.Survey](
 	// 	api,
@@ -91,29 +94,29 @@ func main() {
 	// 		"DELETE": {},
 	// 	})
 
-	crud_router.SetupRouter[entity.SurveyQuestion](
-		api,
-		mysql_configs.DB,
-		reflect.TypeOf(entity.SurveyQuestion{}),
-		"/survey-questions",
-		map[string][]gin.HandlerFunc{
-			"POST":   {},
-			"READ":   {},
-			"PUT":    {},
-			"DELETE": {},
-		})
+	// crud_router.SetupRouter[entity.SurveyQuestion](
+	// 	api,
+	// 	mysql_configs.DB,
+	// 	reflect.TypeOf(entity.SurveyQuestion{}),
+	// 	"/survey-questions",
+	// 	map[string][]gin.HandlerFunc{
+	// 		"POST":   {},
+	// 		"READ":   {},
+	// 		"PUT":    {},
+	// 		"DELETE": {},
+	// 	})
 
-	crud_router.SetupRouter[entity.SurveyAnswer](
-		api,
-		mysql_configs.DB,
-		reflect.TypeOf(entity.SurveyAnswer{}),
-		"/survey-answers",
-		map[string][]gin.HandlerFunc{
-			"POST":   {},
-			"READ":   {},
-			"PUT":    {},
-			"DELETE": {},
-		})
+	// crud_router.SetupRouter[entity.SurveyAnswer](
+	// 	api,
+	// 	mysql_configs.DB,
+	// 	reflect.TypeOf(entity.SurveyAnswer{}),
+	// 	"/survey-answers",
+	// 	map[string][]gin.HandlerFunc{
+	// 		"POST":   {},
+	// 		"READ":   {},
+	// 		"PUT":    {},
+	// 		"DELETE": {},
+	// 	})
 
 	// Serve static files
 	r.GET("/", func(c *gin.Context) {
