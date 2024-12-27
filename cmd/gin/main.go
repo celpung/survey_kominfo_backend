@@ -49,6 +49,7 @@ func main() {
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
 			"http://localhost:5173",
+			"http://localhost:3000",
 			"http://localhost",
 			"http://103.116.168.244",
 			"http://103.116.168.244/survey",
