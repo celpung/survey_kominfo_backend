@@ -66,6 +66,7 @@ func AutoMigrage() {
 		&entity.Survey{},
 		&entity.SurveyQuestion{},
 		&entity.SurveyAnswer{},
+		&entity.SurveyCategory{},
 	); migrateErr != nil {
 		panic(migrateErr)
 	}

@@ -63,6 +63,18 @@ func main() {
 	api := r.Group("/api")
 	user_router.Router(api)
 
+	crud_router.SetupRouter[entity.SurveyCategory](
+		api,
+		mysql_configs.DB,
+		reflect.TypeOf(entity.SurveyCategory{}),
+		"/categories",
+		map[string][]gin.HandlerFunc{
+			"POST":   {},
+			"READ":   {},
+			"PUT":    {},
+			"DELETE": {},
+		})
+
 	crud_router.SetupRouter[entity.Survey](
 		api,
 		mysql_configs.DB,
