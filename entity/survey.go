@@ -6,12 +6,12 @@ type Survey struct {
 	ID               uint             `gorm:"primaryKey" json:"id" form:"id"`
 	UserID           uint             `json:"user_id" form:"user_id"`
 	Author           User             `gorm:"foreignKey:UserID" json:"author"`
-	Image            string           `json:"image" form:"image" binding:"required"`
-	Title            string           `gorm:"unique" json:"title" form:"title" binding:"required"`
-	Slug             string           `gorm:"unique" json:"slug" form:"slug" binding:"required"`
-	Status           bool             `json:"status" form:"status" binding:"required"`
+	Image            string           `json:"image" form:"image"`
+	Title            string           `gorm:"unique" json:"title" form:"title"`
+	Slug             string           `gorm:"unique" json:"slug" form:"slug"`
+	Status           bool             `json:"status" form:"status"`
 	Description      string           `json:"description" form:"description"`
-	ExpireDate       time.Time        `json:"expire_date" form:"expire_date" binding:"required"`
+	ExpireDate       time.Time        `json:"expire_date" form:"expire_date"`
 	Questions        []SurveyQuestion `gorm:"foreignKey:SurveyID" json:"questions"`
 	SurveyCategoryID uint             `json:"survey_id"`
 	Public           bool             `json:"public"`
