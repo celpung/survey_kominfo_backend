@@ -3,8 +3,8 @@ package entity
 import "time"
 
 type Survey struct {
-	ID     uint `gorm:"primaryKey" json:"id" form:"id"`
-	UserID uint `json:"user_id" form:"user_id"`
+	ID uint `gorm:"primaryKey" json:"id" form:"id"`
+	// UserID uint `json:"user_id" form:"user_id"`
 	// Author           User             `gorm:"foreignKey:UserID" json:"author"`
 	Image            string           `json:"image" form:"image"`
 	Title            string           `gorm:"unique" json:"title" form:"title"`
