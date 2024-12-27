@@ -45,7 +45,7 @@ type SurveyQuestion struct {
 	ID          uint       `gorm:"primaryKey" json:"id" form:"id"`
 	SurveyID    uint       `json:"survey_id" form:"survey_id"`
 	Survey      Survey     `gorm:"foreignKey:SurveyID" json:"survey"`
-	Question    string     `gorm:"unique" json:"question" form:"question" binding:"required"`
+	Question    string     `json:"question" form:"question" binding:"required"`
 	Type        string     `json:"type" form:"type" binding:"required"`
 	Description string     `json:"description" form:"description"`
 	Data        string     `json:"data" form:"data"`
