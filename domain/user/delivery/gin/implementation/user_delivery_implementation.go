@@ -1,7 +1,6 @@
 package user_delivery_implementation
 
 import (
-	"fmt"
 	"net/http"
 
 	user_delivery "github.com/celpung/gocleanarch/domain/user/delivery/gin"
@@ -49,14 +48,11 @@ func (d *UserDeliveryStruct) Register(c *gin.Context) {
 func (d *UserDeliveryStruct) Login(c *gin.Context) {
 	// get user input data
 	type UserLogin struct {
-		Email    string `json:"email" binding:"required"`
+		Username string `json:"username" binding:"required"`
 		Password string `json:"password" binding:"required"`
 	}
 
 	var login UserLogin
-
-	fmt.Println(login.Email)
-	fmt.Println(login.Password)
 
 	if err := c.ShouldBindJSON(&login); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -68,7 +64,7 @@ func (d *UserDeliveryStruct) Login(c *gin.Context) {
 	}
 
 	// perform login to get token data
-	token, err := d.UserUsecase.Login(login.Email, login.Password)
+	token, err := d.UserUsecase.Login(login.Username, login.Password)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
@@ -127,7 +123,7 @@ func (d *UserDeliveryStruct) UpdateUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Success fetch user data!",
+		"message": "Success update user data!",
 		"user":    user,
 	})
 }

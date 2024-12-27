@@ -15,9 +15,9 @@ func NewJwtService() *JwtService {
 
 func (js *JwtService) JWTGenerator(user entity.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"email": user.Email,
-		"id":    user.ID,
-		"role":  user.Role,
+		"username": user.Username,
+		"id":       user.ID,
+		"role":     user.Role,
 	})
 
 	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_TOKEN")))

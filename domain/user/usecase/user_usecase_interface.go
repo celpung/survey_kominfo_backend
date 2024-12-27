@@ -8,5 +8,5 @@ type UserUsecaseInterface interface {
 	ReadByID(userID uint) (*entity.UserHttpResponse, error)
 	Update(user *entity.UserUpdate) (*entity.UserHttpResponse, error)
 	Delete(userID uint) error
-	Login(email, password string) (string, error)
+	Login(username, password string) (string, error)
 }

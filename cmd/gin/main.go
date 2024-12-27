@@ -9,6 +9,7 @@ import (
 
 	mysql_configs "github.com/celpung/gocleanarch/configs/database/mysql"
 	"github.com/celpung/gocleanarch/configs/environment"
+	survey_router "github.com/celpung/gocleanarch/domain/survey/delivery/router"
 	user_router "github.com/celpung/gocleanarch/domain/user/delivery/gin/router"
 	"github.com/celpung/gocleanarch/entity"
 	crud_router "github.com/celpung/gocleanarch/utils/crud/delivery/router"
@@ -61,7 +62,9 @@ func main() {
 
 	// setup router
 	api := r.Group("/api")
+
 	user_router.Router(api)
+	survey_router.Router(api)
 
 	crud_router.SetupRouter[entity.SurveyCategory](
 		api,
@@ -75,17 +78,17 @@ func main() {
 			"DELETE": {},
 		})
 
-	crud_router.SetupRouter[entity.Survey](
-		api,
-		mysql_configs.DB,
-		reflect.TypeOf(entity.Survey{}),
-		"/surveys",
-		map[string][]gin.HandlerFunc{
-			"POST":   {},
-			"READ":   {},
-			"PUT":    {},
-			"DELETE": {},
-		})
+	// crud_router.SetupRouter[entity.Survey](
+	// 	api,
+	// 	mysql_configs.DB,
+	// 	reflect.TypeOf(entity.Survey{}),
+	// 	"/surveys",
+	// 	map[string][]gin.HandlerFunc{
+	// 		"POST":   {},
+	// 		"READ":   {},
+	// 		"PUT":    {},
+	// 		"DELETE": {},
+	// 	})
 
 	crud_router.SetupRouter[entity.SurveyQuestion](
 		api,
@@ -116,7 +119,7 @@ func main() {
 		c.File("./public")
 	})
 
-	r.Static("/images", "./public/images")
+	r.Static("/images", "./public/images") // this is should be private
 
 	// Start the server
 	r.Run(fmt.Sprintf(":%s", environment.Env.PORT))

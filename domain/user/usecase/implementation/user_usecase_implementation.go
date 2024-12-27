@@ -2,7 +2,6 @@ package user_usecase_implementation
 
 import (
 	"errors"
-	"fmt"
 
 	user_repository "github.com/celpung/gocleanarch/domain/user/repository"
 	user_usecase "github.com/celpung/gocleanarch/domain/user/usecase"
@@ -19,6 +18,9 @@ type UserUsecaseStruct struct {
 
 // Create implements user_usecase.UserUsecaseInterface.
 func (u *UserUsecaseStruct) Create(user *entity.User) (*entity.UserHttpResponse, error) {
+	if len(user.Password) < 8 {
+		return nil, errors.New("password minimal 8 karakter")
+	}
 	// hashing password
 	hashedPassword, err := u.PasswordService.HashPassword(user.Password)
 	if err != nil {
@@ -27,6 +29,7 @@ func (u *UserUsecaseStruct) Create(user *entity.User) (*entity.UserHttpResponse,
 
 	// set the hashed password into new user password
 	user.Password = hashedPassword
+	user.Active = true
 
 	// perform create user
 	user, userErr := u.UserRepository.Create(user)
@@ -35,11 +38,11 @@ func (u *UserUsecaseStruct) Create(user *entity.User) (*entity.UserHttpResponse,
 	}
 
 	userResponse := &entity.UserHttpResponse{
-		ID:     user.ID,
-		Name:   user.Name,
-		Email:  user.Email,
-		Active: user.Active,
-		Role:   user.Role,
+		ID:       user.ID,
+		Name:     user.Name,
+		Username: user.Username,
+		Active:   user.Active,
+		Role:     user.Role,
 	}
 
 	return userResponse, nil
@@ -62,11 +65,11 @@ func (u *UserUsecaseStruct) Read() ([]*entity.UserHttpResponse, error) {
 	var userResponse []*entity.UserHttpResponse
 	for _, v := range user {
 		userResponse = append(userResponse, &entity.UserHttpResponse{
-			ID:     v.ID,
-			Name:   v.Name,
-			Email:  v.Email,
-			Active: v.Active,
-			Role:   v.Role,
+			ID:       v.ID,
+			Name:     v.Name,
+			Username: v.Username,
+			Active:   v.Active,
+			Role:     v.Role,
 		})
 	}
 	return userResponse, nil
@@ -83,11 +86,11 @@ func (u *UserUsecaseStruct) ReadByID(userID uint) (*entity.UserHttpResponse, err
 	}
 
 	userResponse := &entity.UserHttpResponse{
-		ID:     user.ID,
-		Name:   user.Name,
-		Email:  user.Email,
-		Active: user.Active,
-		Role:   user.Role,
+		ID:       user.ID,
+		Name:     user.Name,
+		Username: user.Username,
+		Active:   user.Active,
+		Role:     user.Role,
 	}
 
 	return userResponse, nil
@@ -104,10 +107,13 @@ func (u *UserUsecaseStruct) Update(user *entity.UserUpdate) (*entity.UserHttpRes
 	if user.Name != "" {
 		existingUser.Name = user.Name
 	}
-	if user.Email != "" {
-		existingUser.Email = user.Email
+	if user.Username != "" {
+		existingUser.Username = user.Username
 	}
 	if user.Password != "" {
+		if len(user.Password) < 8 {
+			return nil, errors.New("password minimal 8 karakter")
+		}
 		hashedPassword, err := u.PasswordService.HashPassword(user.Password)
 		if err != nil {
 			return nil, err
@@ -128,26 +134,24 @@ func (u *UserUsecaseStruct) Update(user *entity.UserUpdate) (*entity.UserHttpRes
 	}
 
 	userResponse := &entity.UserHttpResponse{
-		ID:     updatedUser.ID,
-		Name:   updatedUser.Name,
-		Email:  updatedUser.Email,
-		Active: updatedUser.Active,
-		Role:   updatedUser.Role,
+		ID:       updatedUser.ID,
+		Name:     updatedUser.Name,
+		Username: updatedUser.Username,
+		Active:   updatedUser.Active,
+		Role:     updatedUser.Role,
 	}
 
 	return userResponse, nil
 }
 
 // Login implements user_usecase.UserUsecaseInterface.
-func (u *UserUsecaseStruct) Login(email, password string) (string, error) {
+func (u *UserUsecaseStruct) Login(username, password string) (string, error) {
 	// perform read user by email
-	user, err := u.UserRepository.ReadByEmail(email, true)
+	user, err := u.UserRepository.ReadByEmail(username, true)
 	if err != nil {
 		return "", err
 	}
 
-	fmt.Println(user.Email)
-	fmt.Println(password)
 	// check is user active
 	if !user.Active {
 		return "", errors.New("user not active")

@@ -1,8 +1,11 @@
 package user_repository_implementation
 
 import (
+	"fmt"
+
 	user_repository "github.com/celpung/gocleanarch/domain/user/repository"
 	"github.com/celpung/gocleanarch/entity"
+	"github.com/go-sql-driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -12,8 +15,19 @@ type UserRepositoryStruct struct {
 
 // Create implements user_repository.UserRepositoryInterface.
 func (r *UserRepositoryStruct) Create(user *entity.User) (*entity.User, error) {
+	// Attempt to create the user in the database
 	if err := r.DB.Create(user).Error; err != nil {
-		return nil, err
+		// Handle duplicate entry errors or other specific errors
+		if gormErr, ok := err.(*mysql.MySQLError); ok {
+			switch gormErr.Number {
+			case 1062: // Duplicate entry error code in MySQL
+				return nil, fmt.Errorf("username '%s' sudah ada", user.Username)
+			default:
+				return nil, fmt.Errorf("database error: %v", gormErr.Message)
+			}
+		}
+		// Generic database error if not MySQL-specific
+		return nil, fmt.Errorf("failed to create user: %v", err)
 	}
 
 	return user, nil
@@ -40,14 +54,14 @@ func (r *UserRepositoryStruct) ReadByID(userID uint) (*entity.User, error) {
 }
 
 // ReadByEmail implements user_repository.UserRepositoryInterface.
-func (r *UserRepositoryStruct) ReadByEmail(email string, isLogin bool) (*entity.User, error) {
+func (r *UserRepositoryStruct) ReadByEmail(username string, isLogin bool) (*entity.User, error) {
 	var user entity.User
 	if isLogin {
-		if err := r.DB.Where("email = ?", email).First(&user).Error; err != nil {
+		if err := r.DB.Where("username = ?", username).First(&user).Error; err != nil {
 			return nil, err
 		}
 	} else {
-		if err := r.selectUserData(r.DB).Where("email = ?", email).First(&user).Error; err != nil {
+		if err := r.selectUserData(r.DB).Where("username = ?", username).First(&user).Error; err != nil {
 			return nil, err
 		}
 	}
@@ -72,7 +86,7 @@ func (r *UserRepositoryStruct) Delete(userID uint) error {
 }
 
 func (r *UserRepositoryStruct) selectUserData(db *gorm.DB) *gorm.DB {
-	return db.Select("ID, Name, Email, Active, Role")
+	return db.Select("ID, Name, Username, Active, Role")
 }
 
 func NewUserRepositry(db *gorm.DB) user_repository.UserRepositoryInterface {

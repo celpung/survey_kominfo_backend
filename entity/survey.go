@@ -3,9 +3,7 @@ package entity
 import "time"
 
 type Survey struct {
-	ID uint `gorm:"primaryKey" json:"id" form:"id"`
-	// UserID      uint             `json:"user_id" form:"user_id"`
-	// Author      User             `gorm:"foreignKey:UserID" json:"author"`
+	ID          uint             `gorm:"primaryKey" json:"id" form:"id"`
 	Image       string           `json:"image" form:"image"`
 	Title       string           `gorm:"unique" json:"title" form:"title"`
 	Slug        string           `gorm:"unique" json:"slug" form:"slug"`
@@ -13,13 +11,19 @@ type Survey struct {
 	Description string           `json:"description" form:"description"`
 	ExpireDate  time.Time        `json:"expire_date" form:"expire_date"`
 	Questions   []SurveyQuestion `gorm:"foreignKey:SurveyID" json:"questions"`
-	// CategoryID       uint             `json:"category_id" form:"category_id"`
-	// SurveyCategoryID uint             `gorm:"foreignKey:CategoryID" json:"category"`
-	Public    bool       `json:"public"`
-	CreatedAt time.Time  `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt time.Time  `gorm:"autoUpdateTime" json:"updated_at"`
-	DeletedAt *time.Time `gorm:"index" json:"deleted_at"`
+	Public      bool             `json:"public"`
+	CreatedAt   time.Time        `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt   time.Time        `gorm:"autoUpdateTime" json:"updated_at"`
+	DeletedAt   *time.Time       `gorm:"index" json:"deleted_at"`
 }
+
+// Key         string           `json:"key", binding"required"`
+
+// CategoryID       uint             `json:"category_id" form:"category_id"`
+// SurveyCategoryID uint             `gorm:"foreignKey:CategoryID" json:"category"`
+
+// UserID      uint             `json:"user_id" form:"user_id"`
+// Author      User             `gorm:"foreignKey:UserID" json:"author"`
 
 // generate qr code untuk survey
 // buat table role
@@ -41,14 +45,27 @@ const (
 	TypeLocation = "location"
 )
 
+//	type SurveyQuestion struct {
+//		ID          uint       `gorm:"primaryKey" json:"id" form:"id"`
+//		SurveyID    uint       `json:"survey_id" form:"survey_id"`
+//		Survey      Survey     `gorm:"foreignKey:SurveyID" json:"survey"`
+//		Question    string     `json:"question" form:"question" binding:"required"`
+//		Type        string     `json:"type" form:"type" binding:"required"`
+//		Description string     `json:"description" form:"description"`
+//		Data        string     `json:"data" form:"data"`
+//		AllowImage  bool       `json:"allow_image" form:"allow_image"`
+//		CreatedAt   time.Time  `gorm:"autoCreateTime" json:"created_at"`
+//		UpdatedAt   time.Time  `gorm:"autoUpdateTime" json:"updated_at"`
+//		DeletedAt   *time.Time `gorm:"index" json:"deleted_at"`
+//	}
 type SurveyQuestion struct {
 	ID          uint       `gorm:"primaryKey" json:"id" form:"id"`
 	SurveyID    uint       `json:"survey_id" form:"survey_id"`
 	Survey      Survey     `gorm:"foreignKey:SurveyID" json:"survey"`
-	Question    string     `json:"question" form:"question" binding:"required"`
-	Type        string     `json:"type" form:"type" binding:"required"`
-	Description string     `json:"description" form:"description"`
-	Data        string     `json:"data" form:"data"`
+	Question    string     `gorm:"type:varchar(255);not null" json:"question" form:"question" binding:"required"`
+	Type        string     `gorm:"type:varchar(50);not null" json:"type" form:"type" binding:"required"`
+	Description string     `gorm:"type:text" json:"description" form:"description"`
+	Data        string     `gorm:"type:text" json:"data" form:"data"`
 	AllowImage  bool       `json:"allow_image" form:"allow_image"`
 	CreatedAt   time.Time  `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt   time.Time  `gorm:"autoUpdateTime" json:"updated_at"`
@@ -75,3 +92,7 @@ type SurveyAnswer struct {
 	UpdatedAt  time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
 	DeletedAt  *time.Time     `gorm:"index" json:"deleted_at"`
 }
+
+// need table unverified answer
+// need table
+// error response
