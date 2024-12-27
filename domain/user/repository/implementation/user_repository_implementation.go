@@ -15,18 +15,15 @@ type UserRepositoryStruct struct {
 
 // Create implements user_repository.UserRepositoryInterface.
 func (r *UserRepositoryStruct) Create(user *entity.User) (*entity.User, error) {
-	// Attempt to create the user in the database
 	if err := r.DB.Create(user).Error; err != nil {
-		// Handle duplicate entry errors or other specific errors
 		if gormErr, ok := err.(*mysql.MySQLError); ok {
 			switch gormErr.Number {
-			case 1062: // Duplicate entry error code in MySQL
+			case 1062:
 				return nil, fmt.Errorf("username '%s' sudah ada", user.Username)
 			default:
 				return nil, fmt.Errorf("database error: %v", gormErr.Message)
 			}
 		}
-		// Generic database error if not MySQL-specific
 		return nil, fmt.Errorf("failed to create user: %v", err)
 	}
 
@@ -34,14 +31,23 @@ func (r *UserRepositoryStruct) Create(user *entity.User) (*entity.User, error) {
 }
 
 // Read implements user_repository.UserRepositoryInterface.
-func (r *UserRepositoryStruct) Read(page, limit int) ([]*entity.User, error) {
+// Read implements user_repository.UserRepositoryInterface.
+func (r *UserRepositoryStruct) Read(page, limit int) ([]*entity.User, int64, error) {
 	offset := (page - 1) * limit
 	var users []*entity.User
-	if err := r.selectUserData(r.DB).Limit(limit).Offset(offset).Find(&users).Error; err != nil {
-		return nil, err
+	var totalCount int64
+
+	// Count the total number of records
+	if err := r.selectUserData(r.DB).Model(&entity.User{}).Count(&totalCount).Error; err != nil {
+		return nil, 0, err
 	}
 
-	return users, nil
+	// Fetch paginated data
+	if err := r.selectUserData(r.DB).Limit(limit).Offset(offset).Find(&users).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return users, totalCount, nil
 }
 
 // ReadByID implements user_repository.UserRepositoryInterface.

@@ -55,11 +55,11 @@ func (u *UserUsecaseStruct) Delete(userID uint) error {
 }
 
 // Read implements user_usecase.UserUsecaseInterface.
-func (u *UserUsecaseStruct) Read(page, limit int) ([]*entity.UserHttpResponse, error) {
+func (u *UserUsecaseStruct) Read(page, limit int) ([]*entity.UserHttpResponse, int64, error) {
 	// perform read all user
-	user, err := u.UserRepository.Read(page, limit)
+	user, total, err := u.UserRepository.Read(page, limit)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	var userResponse []*entity.UserHttpResponse
@@ -72,7 +72,7 @@ func (u *UserUsecaseStruct) Read(page, limit int) ([]*entity.UserHttpResponse, e
 			Role:     v.Role,
 		})
 	}
-	return userResponse, nil
+	return userResponse, total, nil
 
 	// return u.UserRepository.Read()
 }

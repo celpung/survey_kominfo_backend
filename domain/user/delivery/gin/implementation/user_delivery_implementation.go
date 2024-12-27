@@ -107,7 +107,7 @@ func (d *UserDeliveryStruct) GetAllUserData(c *gin.Context) {
 		return
 	}
 
-	user, err := d.UserUsecase.Read(page, limit)
+	user, total, err := d.UserUsecase.Read(page, limit)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
@@ -118,9 +118,10 @@ func (d *UserDeliveryStruct) GetAllUserData(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Success fetch user data!",
-		"user":    user,
+		"success":    true,
+		"message":    "Success fetch user data!",
+		"user":       user,
+		"total_data": total,
 	})
 }
 
