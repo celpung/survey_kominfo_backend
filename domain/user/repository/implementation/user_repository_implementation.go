@@ -34,9 +34,10 @@ func (r *UserRepositoryStruct) Create(user *entity.User) (*entity.User, error) {
 }
 
 // Read implements user_repository.UserRepositoryInterface.
-func (r *UserRepositoryStruct) Read() ([]*entity.User, error) {
+func (r *UserRepositoryStruct) Read(page, limit int) ([]*entity.User, error) {
+	offset := (page - 1) * limit
 	var users []*entity.User
-	if err := r.selectUserData(r.DB).Find(&users).Error; err != nil {
+	if err := r.selectUserData(r.DB).Limit(limit).Offset(offset).Find(&users).Error; err != nil {
 		return nil, err
 	}
 

@@ -55,9 +55,9 @@ func (u *UserUsecaseStruct) Delete(userID uint) error {
 }
 
 // Read implements user_usecase.UserUsecaseInterface.
-func (u *UserUsecaseStruct) Read() ([]*entity.UserHttpResponse, error) {
+func (u *UserUsecaseStruct) Read(page, limit int) ([]*entity.UserHttpResponse, error) {
 	// perform read all user
-	user, err := u.UserRepository.Read()
+	user, err := u.UserRepository.Read(page, limit)
 	if err != nil {
 		return nil, err
 	}

@@ -2,6 +2,7 @@ package user_delivery_implementation
 
 import (
 	"net/http"
+	"strconv"
 
 	user_delivery "github.com/celpung/gocleanarch/domain/user/delivery/gin"
 	user_usecase "github.com/celpung/gocleanarch/domain/user/usecase"
@@ -83,7 +84,30 @@ func (d *UserDeliveryStruct) Login(c *gin.Context) {
 
 // GetAllUserData implements user_delivery.UserDeliveryInterface.
 func (d *UserDeliveryStruct) GetAllUserData(c *gin.Context) {
-	user, err := d.UserUsecase.Read()
+	pageStr := c.DefaultQuery("page", "1")
+	limitStr := c.DefaultQuery("limit", "10")
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid page parameter",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid limit parameter",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	user, err := d.UserUsecase.Read(page, limit)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
