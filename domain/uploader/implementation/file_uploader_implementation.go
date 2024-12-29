@@ -14,7 +14,6 @@ type FileUploaderImplementationStruct struct{}
 
 // UploadFile implements uploader.FileUploader.
 func (f *FileUploaderImplementationStruct) UploadFile(c *gin.Context) {
-	// Handle multiple file uploads
 	uploadedFiles, err := gouploader.Multiple(c.Request, "./public/files", "file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -26,19 +25,26 @@ func (f *FileUploaderImplementationStruct) UploadFile(c *gin.Context) {
 	}
 
 	var fileUrls []string
+	var originalNames []string
 
 	// If files are uploaded successfully, generate URLs for each file
 	if len(uploadedFiles) > 0 {
 		for _, file := range uploadedFiles {
 			fileUrl := fmt.Sprintf("%s/files/%s", environment.Env.BASE_URL, file.Filename)
 			fileUrls = append(fileUrls, fileUrl)
+
+			fileHeader, _ := c.FormFile("file") // You can use the field name to get FileHeader
+			if fileHeader != nil {
+				originalNames = append(originalNames, fileHeader.Filename)
+			}
 		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Files uploaded successfully",
-		"urls":    fileUrls, // Return the array of file URLs
+		"success":        true,
+		"message":        "Files uploaded successfully",
+		"urls":           fileUrls,
+		"original_names": originalNames,
 	})
 }
 
