@@ -25,6 +25,7 @@ func (f *FileUploaderImplementationStruct) UploadFile(c *gin.Context) {
 	}
 
 	var fileUrls []string
+	var paths []string
 	var originalNames []string
 
 	// If files are uploaded successfully, generate URLs for each file
@@ -32,6 +33,9 @@ func (f *FileUploaderImplementationStruct) UploadFile(c *gin.Context) {
 		for _, file := range uploadedFiles {
 			fileUrl := fmt.Sprintf("%s/files/%s", environment.Env.BASE_URL, file.Filename)
 			fileUrls = append(fileUrls, fileUrl)
+
+			filePath := fmt.Sprintf("/files/%s", file.Filename)
+			paths = append(paths, filePath)
 
 			fileHeader, _ := c.FormFile("file") // You can use the field name to get FileHeader
 			if fileHeader != nil {
@@ -44,6 +48,7 @@ func (f *FileUploaderImplementationStruct) UploadFile(c *gin.Context) {
 		"success":        true,
 		"message":        "Files uploaded successfully",
 		"urls":           fileUrls,
+		"paths":          paths,
 		"original_names": originalNames,
 	})
 }
