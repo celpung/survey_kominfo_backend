@@ -54,8 +54,6 @@ type SurveyQuestion struct {
 	DeletedAt   *time.Time     `gorm:"index" json:"deleted_at"`
 }
 
-// kategori survey desnt needed
-
 type SurveyAnswer struct {
 	ID         uint            `gorm:"primaryKey" json:"id" form:"id"`
 	SurveyID   uint            `json:"survey_id" form:"survey_id"`
@@ -69,9 +67,5 @@ type SurveyAnswer struct {
 	DeletedAt  *time.Time      `gorm:"index" json:"deleted_at"`
 }
 
-// UserID     uint           `json:"user_id" form:"user_id"`
-// 	Surveyor   User           `gorm:"foreignKey:UserID" json:"author"`
-
 // need table unverified answer
 // need table
-// error response

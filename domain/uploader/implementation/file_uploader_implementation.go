@@ -12,7 +12,6 @@ import (
 
 type FileUploaderImplementationStruct struct{}
 
-// UploadFile implements uploader.FileUploader.
 func (f *FileUploaderImplementationStruct) UploadFile(c *gin.Context) {
 	uploadedFiles, err := gouploader.Multiple(c.Request, "./public/files", "file")
 	if err != nil {
@@ -28,7 +27,6 @@ func (f *FileUploaderImplementationStruct) UploadFile(c *gin.Context) {
 	var paths []string
 	var originalNames []string
 
-	// If files are uploaded successfully, generate URLs for each file
 	if len(uploadedFiles) > 0 {
 		for _, file := range uploadedFiles {
 			fileUrl := fmt.Sprintf("%s/files/%s", environment.Env.BASE_URL, file.Filename)
@@ -37,7 +35,7 @@ func (f *FileUploaderImplementationStruct) UploadFile(c *gin.Context) {
 			filePath := fmt.Sprintf("/files/%s", file.Filename)
 			paths = append(paths, filePath)
 
-			fileHeader, _ := c.FormFile("file") // You can use the field name to get FileHeader
+			fileHeader, _ := c.FormFile("file")
 			if fileHeader != nil {
 				originalNames = append(originalNames, fileHeader.Filename)
 			}

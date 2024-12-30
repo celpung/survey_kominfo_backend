@@ -44,8 +44,8 @@ func (d *QuestionDeliveryStruct) Create(c *gin.Context) {
 
 // Read implements survey_question_delivery.SurveyQuestionDeliveryInterface.
 func (d *QuestionDeliveryStruct) Read(c *gin.Context) {
-	pageStr := c.DefaultQuery("page", "1")
-	limitStr := c.DefaultQuery("limit", "10")
+	pageStr := c.DefaultQuery("page", "0")
+	limitStr := c.DefaultQuery("limit", "0")
 
 	page, err := strconv.Atoi(pageStr)
 	if err != nil {
@@ -158,9 +158,9 @@ func (d *QuestionDeliveryStruct) ReadBySurveyId(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"success":   true,
-		"questions": questions,
-		"total_data":     total,
+		"success":    true,
+		"questions":  questions,
+		"total_data": total,
 	})
 }
 

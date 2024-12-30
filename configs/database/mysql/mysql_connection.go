@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/celpung/gocleanarch/entity"
 	"gorm.io/driver/mysql"
@@ -55,6 +56,18 @@ func ConnectDatabase() {
 	if err != nil {
 		panic("failed to connect database")
 	}
+
+	// Access the underlying *sql.DB object for connection pooling
+	sqlDB, err := db.DB()
+	if err != nil {
+		panic("failed to get database instance")
+	}
+
+	// Set connection pool parameters
+	sqlDB.SetMaxOpenConns(100)                 // Maximum number of open connections
+	sqlDB.SetMaxIdleConns(50)                  // Maximum number of idle connections
+	sqlDB.SetConnMaxLifetime(30 * time.Minute) // Maximum lifetime of a connection
+	sqlDB.SetConnMaxIdleTime(10 * time.Minute) // Maximum idle time of a connection
 
 	DB = db
 }

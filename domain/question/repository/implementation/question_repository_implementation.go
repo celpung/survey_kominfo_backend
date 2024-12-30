@@ -17,7 +17,6 @@ func (r *SurveyQuestionRepositoryStruct) Create(question *entity.SurveyQuestion)
 
 // Read implements survey_question_repository.SurveyQuestionRepository.
 func (r *SurveyQuestionRepositoryStruct) Read(page, limit int) ([]*entity.SurveyQuestion, int64, error) {
-	offset := (page - 1) * limit
 	var totalCount int64
 	var questions []*entity.SurveyQuestion
 
@@ -25,9 +24,13 @@ func (r *SurveyQuestionRepositoryStruct) Read(page, limit int) ([]*entity.Survey
 		return nil, 0, err
 	}
 
-	if err := r.DB.Limit(limit).Offset(offset).
-		Preload("Survey").
-		Find(&questions).Error; err != nil {
+	query := r.DB.Model(&entity.SurveyQuestion{})
+	if (page > 0) && (limit > 0) {
+		offset := (page - 1) * limit
+		query = query.Limit(limit).Offset(offset)
+	}
+
+	if err := query.Find(&questions).Error; err != nil {
 		return nil, 0, err
 	}
 
