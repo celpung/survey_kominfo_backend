@@ -54,6 +54,8 @@ func main() {
 			"http://localhost",
 			"http://103.116.168.244",
 			"http://103.116.168.244/survey",
+			"http://surveyflex.medan.go.id",
+			"https://surveyflex.medan.go.id",
 		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
@@ -77,7 +79,7 @@ func main() {
 		c.File("./public")
 	})
 
-	r.Static("/images", "./public/images") 
+	r.Static("/images", "./public/images")
 	r.Static("/files", "./public/files")
 
 	// Start the server
